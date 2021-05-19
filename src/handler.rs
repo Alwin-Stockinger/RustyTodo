@@ -1,4 +1,5 @@
-use std::io::stdin;
+use std::io::{stdin, Write, Read};
+use std::fs::File;
 
 use std::collections::HashSet;
 
@@ -18,6 +19,7 @@ fn print_options(){
     }
 }
 
+static SAVE_DEFAULT_NAME: &str = "save.json";
 
 pub struct Handler{
     projects: HashSet<Project>,
@@ -48,6 +50,8 @@ impl Handler{
                 "quit" => break,
                 "q" => break,
                 "help" => print_options(),
+                "save" => self.save(rest),
+                "load" => self.load(rest),
                 x => println!("{} is not an option, input help for availabe options", x),
             }
         }
@@ -73,6 +77,34 @@ impl Handler{
             }
             None => println!("No second argument given?!"),
         }
+    }
+
+    fn save(&self, mut cmds: Vec<String>){
+        let save_name = match cmds.pop(){
+            Some(name) => name,
+            None => String::from(SAVE_DEFAULT_NAME), 
+        };
+
+        let json_string = serde_json::to_string(&self.projects).unwrap();
+
+        let mut out = File::create(save_name).unwrap();
+        write!(out, "{}", json_string).unwrap();
+    }
+
+    fn load(&mut self, mut cmds: Vec<String>){
+        let load_name = match cmds.pop(){
+            Some(name) => name,
+            None => String::from(SAVE_DEFAULT_NAME),
+        };
+
+        let mut json_string = String::new();
+
+        let mut file = File::open(load_name).unwrap();
+
+        file.read_to_string(&mut json_string).unwrap();
+
+        self.projects = serde_json::from_str(&json_string).unwrap();
+
     }
 
     fn list_projects(&self){
