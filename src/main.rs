@@ -1,15 +1,21 @@
-use std::fs::File;
-use std::io::Write;
-use std::io::prelude::*;
+//use std::fs::File;
+//use std::io::Write;
+//use std::io::prelude::*;
 
-use std::time::SystemTime;
+//use std::time::SystemTime;
 
 mod project;
-use project::Project;
+//use project::Project;
 
+mod handler;
 
 fn main(){
 
+    let mut handler = handler::Handler::new();
+
+    handler.handle();
+
+    /*
     let mut idp = Project::new("IDP".to_owned());
 
     println!("{}", idp.has_to_be_reviewed());
@@ -21,6 +27,10 @@ fn main(){
     idp.add_task("dfinity tutorial".to_owned());
 
     println!("{}", idp.has_to_be_reviewed());
+
+
+*/
+
 
     /*
     let string = serde_json::to_string(&idp).unwrap();

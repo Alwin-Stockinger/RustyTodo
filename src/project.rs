@@ -2,10 +2,11 @@ use serde::{Deserialize, Serialize};
 
 use std::time::SystemTime;
 use std::collections::HashSet;
+use std::hash::{Hash, Hasher};
 
 #[derive(Serialize, Deserialize)]
 pub struct Project{
-    name: String,
+    pub name: String,
     review_time: SystemTime,
     tasks: HashSet<String>,
 }
@@ -31,6 +32,21 @@ impl Project{
 
     pub fn add_task(&mut self, task: String){
         self.tasks.insert(task);
+    }
+}
+
+impl PartialEq for Project{
+    fn eq(&self, other: &Self) -> bool{
+        self.name == other.name
+    }
+}
+
+impl Eq for Project{
+}
+
+impl Hash for Project {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.name.hash(state);
     }
 }
 
