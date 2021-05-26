@@ -11,7 +11,7 @@ pub enum Action{
 }
 
 fn print_options(){
-    let options = vec!["project", "quit", "help"];
+    let options = vec!["project", "quit", "help", "save", "load"];
 
     println!("\nAvailabe Options:");
     for x in options{
