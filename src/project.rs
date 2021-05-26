@@ -8,7 +8,7 @@ use std::hash::{Hash, Hasher};
 pub struct Project{
     pub name: String,
     review_time: SystemTime,
-    tasks: HashSet<String>,
+    pub tasks: HashSet<String>,
     completed_tasks: HashSet<String>,
 }
 
@@ -42,6 +42,10 @@ impl Project{
         } else {
             println!("No task named {} in the project", task);
         }
+    }
+
+    pub fn set_next_review_days(&mut self, days: u64){
+        self.set_next_review(SystemTime::now() + std::time::Duration::from_secs(60*60*24*days)); 
     }
 }
 

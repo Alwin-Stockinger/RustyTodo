@@ -4,11 +4,8 @@ use std::fs::File;
 use std::collections::HashMap;
 
 use crate::project::Project;
+use crate::review;
 
-pub enum Action{
-    Continue,
-    Quit,
-}
 
 fn print_options(){
     let options = vec!["project", "quit", "help", "save", "load", "task"];
@@ -73,6 +70,7 @@ impl Handler{
                         }
                     }
                     "list" => self.list_projects(),
+                    "review" => self.review_projects(),
                     x => println!("{} is not a valid argument", x),
                 }
             }
@@ -157,6 +155,15 @@ impl Handler{
         println!("\nProjects:");
         for (_,project) in &self.projects {
             println!("{}", project.name);
+        }
+    }
+
+    fn review_projects(&mut self){
+        println!("\nProjects to review:");
+        for (_, project) in self.projects.iter_mut() {
+            if project.has_to_be_reviewed() {
+                review::review_project(project);
+            }
         }
     }
 }
