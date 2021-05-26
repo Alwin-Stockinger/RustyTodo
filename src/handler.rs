@@ -1,7 +1,7 @@
 use std::io::{stdin, Write, Read};
 use std::fs::File;
 
-use std::collections::HashSet;
+use std::collections::HashMap;
 
 use crate::project::Project;
 
@@ -11,7 +11,7 @@ pub enum Action{
 }
 
 fn print_options(){
-    let options = vec!["project", "quit", "help", "save", "load"];
+    let options = vec!["project", "quit", "help", "save", "load", "task"];
 
     println!("\nAvailabe Options:");
     for x in options{
@@ -22,14 +22,14 @@ fn print_options(){
 static SAVE_DEFAULT_NAME: &str = "save.json";
 
 pub struct Handler{
-    projects: HashSet<Project>,
+    projects: HashMap<String, Project>,
 }
 
 impl Handler{
 
     pub fn new() -> Handler{
         Handler{
-            projects: HashSet::new(),
+            projects: HashMap::new(),
         }
     }
 
@@ -47,6 +47,7 @@ impl Handler{
 
             match first{
                 "project" => self.handle_project(rest),
+                "task" => self.handle_task(rest),
                 "quit" => break,
                 "q" => break,
                 "help" => print_options(),
@@ -66,7 +67,7 @@ impl Handler{
                     "new" => {
                         match cmds.pop(){
                             Some(name) => {
-                                self.projects.insert( Project::new(name));
+                                self.projects.insert(name.clone() ,Project::new(name));
                             }
                             None => println!("There was no name given for the new project"),
                         }
@@ -76,6 +77,35 @@ impl Handler{
                 }
             }
             None => println!("No second argument given?!"),
+        }
+    }
+
+    fn handle_task(&mut self, mut cmds: Vec<String>){
+        cmds.reverse();
+
+        match cmds.pop(){
+            Some(arg2) => {
+                match arg2.as_str(){
+                    "new" => {
+                        match cmds.pop(){
+                            Some(project_name) => {
+                                match cmds.pop(){
+                                    Some(task_name) => {
+                                        match self.projects.get_mut(&project_name){
+                                            Some(project) => project.add_task(task_name),
+                                            None => println!("Invalid project name"),
+                                        }
+                                    }
+                                    None => println!("No 4th argument given (task name)"),
+                                }
+                            }
+                            None => println!("No 3rd argument given (projec name to which the task gets added)"),
+                        }
+                    }
+                    x => println!("{} is not a valid 2nd argument", x),
+                }
+            }
+            None => println!("Task What? 2nd argument is missing, e.g. new for new task"),
         }
     }
 
@@ -109,7 +139,7 @@ impl Handler{
 
     fn list_projects(&self){
         println!("\nProjects:");
-        for project in &self.projects {
+        for (_,project) in &self.projects {
             println!("{}", project.name);
         }
     }

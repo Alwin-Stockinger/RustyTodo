@@ -9,6 +9,7 @@ pub struct Project{
     pub name: String,
     review_time: SystemTime,
     tasks: HashSet<String>,
+    completed_tasks: HashSet<String>,
 }
 
 impl Project{
@@ -17,6 +18,7 @@ impl Project{
             name,
             review_time: SystemTime::now(),
             tasks: HashSet::new(),
+            completed_tasks: HashSet::new(),
         }
     }
     pub fn has_to_be_reviewed(&self) -> bool{
