@@ -35,6 +35,14 @@ impl Project{
     pub fn add_task(&mut self, task: String){
         self.tasks.insert(task);
     }
+
+    pub fn complete_task(&mut self, task: String){
+        if self.tasks.remove(&task){
+            self.completed_tasks.insert(task);
+        } else {
+            println!("No task named {} in the project", task);
+        }
+    }
 }
 
 impl PartialEq for Project{

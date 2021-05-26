@@ -102,6 +102,22 @@ impl Handler{
                             None => println!("No 3rd argument given (projec name to which the task gets added)"),
                         }
                     }
+                    "complete" => {
+                        match cmds.pop(){
+                            Some(project_name) => {
+                                match cmds.pop(){
+                                    Some(task_name) => {
+                                        match self.projects.get_mut(&project_name){
+                                            Some(project) => project.complete_task(task_name),
+                                            None => println!("Invalid project name"),
+                                        }
+                                    }
+                                    None => println!("No 4th argument given (task name)"),
+                                }
+                            }
+                            None => println!("No 3rd argument given (projec name to which the task gets added)"),
+                        }
+                    }
                     x => println!("{} is not a valid 2nd argument", x),
                 }
             }
