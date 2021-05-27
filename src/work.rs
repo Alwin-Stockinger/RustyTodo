@@ -8,6 +8,8 @@ use crate::project::Project;
 pub fn work_on_project(project:&mut Project){
     println!("\nWork on project {} started", project.name);
 
+    let start_time = std::time::SystemTime::now();
+
     loop{
         println!("\nTasks:");
         for task in &project.tasks{
@@ -26,7 +28,10 @@ pub fn work_on_project(project:&mut Project){
 
         match first{
             "task" => work_task(project, rest.pop()),
-            "finish" => break,
+            "finish" => {
+                project.add_work_time(start_time.elapsed().unwrap());
+                break;
+            }
             _  => print_options(),
         }
     }

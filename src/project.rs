@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use std::time::SystemTime;
+use std::time::{SystemTime, Duration};
 use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
 
@@ -10,6 +10,7 @@ pub struct Project{
     review_time: SystemTime,
     pub tasks: HashSet<String>,
     completed_tasks: HashSet<String>,
+    work_time: std::time::Duration,
 }
 
 impl Project{
@@ -19,6 +20,7 @@ impl Project{
             review_time: SystemTime::now(),
             tasks: HashSet::new(),
             completed_tasks: HashSet::new(),
+            work_time: Duration::new(0, 0), 
         }
     }
     pub fn has_to_be_reviewed(&self) -> bool{
@@ -45,7 +47,11 @@ impl Project{
     }
 
     pub fn set_next_review_days(&mut self, days: u64){
-        self.set_next_review(SystemTime::now() + std::time::Duration::from_secs(60*60*24*days)); 
+        self.set_next_review(SystemTime::now() + Duration::from_secs(60*60*24*days)); 
+    }
+
+    pub fn add_work_time(&mut self, time: Duration){
+        self.work_time += time;
     }
 }
 
