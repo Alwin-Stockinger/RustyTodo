@@ -5,10 +5,11 @@ use std::collections::HashMap;
 
 use crate::project::Project;
 use crate::review;
+use crate::work;
 
 
 fn print_options(){
-    let options = vec!["project (new, list, review)", "quit", "help", "save", "load", "task(new, complete)"];
+    let options = vec!["project (new, list, review, work)", "quit", "help", "save", "load", "task(new, complete)"];
 
     println!("\nAvailabe Options:");
     for x in options{
@@ -58,23 +59,42 @@ impl Handler{
     fn handle_project(&mut self, mut cmds: Vec<String>){
         cmds.reverse();
 
-        match cmds.pop(){
+        //Optional Arguments
+        let arg2 = cmds.pop(); //what to do
+        let arg3 = cmds.pop(); //project name
+
+        match arg2{
             Some(arg2) => {
                 match arg2.as_str(){
-                    "new" => {
-                        match cmds.pop(){
-                            Some(name) => {
-                                self.projects.insert(name.clone() ,Project::new(name));
-                            }
-                            None => println!("There was no name given for the new project"),
-                        }
-                    }
+                    "new" => self.new_project(arg3),
+                    "work" => self.work(arg3),
                     "list" => self.list_projects(),
                     "review" => self.review_projects(),
                     x => println!("{} is not a valid argument", x),
                 }
             }
             None => println!("No second argument given?!"),
+        }
+    }
+
+    fn work(&mut self, project_name_op: Option<String>){
+        match project_name_op{
+            Some(name) => {
+                match self.projects.get_mut(&name){
+                    Some(project) => work::work_on_project(project),
+                    None => println!("{} is not project", name),
+                }
+            }
+            None => println!("You didn't specify which project to work on")
+        }
+    }
+
+    fn new_project(&mut self, project_name_op: Option<String>){
+        match project_name_op{
+            Some(name) => {
+                self.projects.insert(name.clone() ,Project::new(name));
+            }
+            None => println!("There was no name given for the new project"),
         }
     }
 
