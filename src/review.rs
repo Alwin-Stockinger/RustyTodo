@@ -32,7 +32,7 @@ pub fn review_project(project: &mut Project){
 }
 
 fn print_options(){
-    let options = vec!["task", "finish", "help"];
+    let options = vec!["task (new, complete)", "finish", "help"];
 
     println!("\nAvailabe Options:");
     for x in options{

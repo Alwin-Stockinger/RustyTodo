@@ -8,7 +8,7 @@ use crate::review;
 
 
 fn print_options(){
-    let options = vec!["project", "quit", "help", "save", "load", "task"];
+    let options = vec!["project (new, list, review)", "quit", "help", "save", "load", "task(new, complete)"];
 
     println!("\nAvailabe Options:");
     for x in options{
