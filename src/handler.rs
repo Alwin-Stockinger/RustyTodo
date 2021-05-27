@@ -41,7 +41,7 @@ impl Handler{
 
             let first = commands.next().unwrap();
 
-            let rest: Vec<String> = commands.map(|x| String::from(x)).collect();
+            let mut rest: Vec<String> = commands.map(|x| String::from(x)).collect();
 
             match first{
                 "project" => self.handle_project(rest),
@@ -51,6 +51,7 @@ impl Handler{
                 "help" => print_options(),
                 "save" => self.save(rest),
                 "load" => self.load(rest),
+                "work" => self.work(rest.pop()),
                 x => println!("{} is not an option, input help for availabe options", x),
             }
         }
