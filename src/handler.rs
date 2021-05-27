@@ -46,14 +46,29 @@ impl Handler{
             match first{
                 "project" => self.handle_project(rest),
                 "task" => self.handle_task(rest),
-                "quit" => break,
-                "q" => break,
+                "quit" | "q" => break,
                 "help" => print_options(),
                 "save" => self.save(rest),
                 "load" => self.load(rest),
                 "work" => self.work(rest.pop()),
                 x => println!("{} is not an option, input help for availabe options", x),
             }
+        }
+        self.handle_quit();
+    }
+
+    fn handle_quit(&mut self){
+        println!("Save?");
+
+        let mut buffer = String::new();
+        stdin().read_line(&mut buffer).unwrap();
+        let mut commands = buffer.split_whitespace();
+        let first = commands.next().unwrap();
+        let rest: Vec<String> = commands.map(|x| String::from(x)).collect();
+        
+        match first{
+            "y" | "yes" => self.save(rest),
+            _ => (), 
         }
     }
 
