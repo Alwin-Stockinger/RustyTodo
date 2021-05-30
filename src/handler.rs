@@ -9,7 +9,7 @@ use crate::work;
 
 
 fn print_options(){
-    let options = vec!["project (new, list, review, work)", "quit", "help", "save", "load", "task(new, complete)"];
+    let options = vec!["project (new, list, review, work)", "quit", "help", "save", "load", "task(new, complete)", "review"];
 
     println!("\nAvailabe Options:");
     for x in options{
@@ -26,9 +26,27 @@ pub struct Handler{
 impl Handler{
 
     pub fn new() -> Handler{
-        Handler{
+        let mut handler = Handler{
             projects: HashMap::new(),
+        };
+
+        println!("Load default?");
+
+
+        let mut buffer = String::new();
+        stdin().read_line(&mut buffer).unwrap();
+
+        let mut commands = buffer.split_whitespace();
+
+        let first = commands.next().unwrap();
+
+        let rest: Vec<String> = commands.map(|x| String::from(x)).collect();
+
+        match first{
+            "yes" | "y" | "load" | "l" => handler.load(rest),
+            _ => {}
         }
+        handler
     }
 
     pub fn handle(&mut self){
