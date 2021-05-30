@@ -27,6 +27,7 @@ pub fn work_on_project(project:&mut Project){
         rest.reverse();
 
         match first{
+            "new" => new(project, rest.pop()),
             "task" => work_task(project, rest.pop()),
             "finish" => {
                 project.add_work_time(start_time.elapsed().unwrap());
@@ -54,6 +55,17 @@ fn print_task_options(){
     println!("\nAvailabe Options:");
     for x in options{
         println!("{}", x);
+    }
+}
+
+fn new(project:&mut Project, task_opt: Option<String>){
+    if None == task_opt{
+        println!("No task given to add");
+        return;
+    }
+    else if let Some(task) = task_opt{
+        project.add_task(task);
+        return;
     }
 }
 
