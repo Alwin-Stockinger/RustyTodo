@@ -44,13 +44,13 @@ impl Handler{
             let mut rest: Vec<String> = commands.map(|x| String::from(x)).collect();
 
             match first{
-                "project" => self.handle_project(rest),
-                "task" => self.handle_task(rest),
+                "project" | "p" => self.handle_project(rest),
+                "task" | "t" => self.handle_task(rest),
                 "quit" | "q" => break,
-                "help" => print_options(),
-                "save" => self.save(rest),
-                "load" => self.load(rest),
-                "work" => self.work(rest.pop()),
+                "help" | "h" => print_options(),
+                "save" | "s" => self.save(rest),
+                "load" | "l" => self.load(rest),
+                "work" | "w" => self.work(rest.pop()),
                 x => println!("{} is not an option, input help for availabe options", x),
             }
         }
@@ -82,10 +82,10 @@ impl Handler{
         match arg2{
             Some(arg2) => {
                 match arg2.as_str(){
-                    "new" => self.new_project(arg3),
-                    "work" => self.work(arg3),
-                    "list" => self.list_projects(),
-                    "review" => self.review_projects(),
+                    "n" | "new" => self.new_project(arg3),
+                    "w" | "work" => self.work(arg3),
+                    "l" | "list" => self.list_projects(),
+                    "r" | "review" => self.review_projects(),
                     x => println!("{} is not a valid argument", x),
                 }
             }
@@ -120,7 +120,7 @@ impl Handler{
         match cmds.pop(){
             Some(arg2) => {
                 match arg2.as_str(){
-                    "new" => {
+                    "new" | "n" => {
                         match cmds.pop(){
                             Some(project_name) => {
                                 match cmds.pop(){
@@ -136,7 +136,7 @@ impl Handler{
                             None => println!("No 3rd argument given (projec name to which the task gets added)"),
                         }
                     }
-                    "complete" => {
+                    "complete" | "c" => {
                         match cmds.pop(){
                             Some(project_name) => {
                                 match cmds.pop(){

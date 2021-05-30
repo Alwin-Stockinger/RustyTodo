@@ -20,12 +20,12 @@ pub fn review_project(project: &mut Project){
         let rest: Vec<String> = commands.map(|x| String::from(x)).collect();
 
         match first{
-            "finish" => {
+            "finish" | "f" => {
                 handle_finish(project);
                 break;
             }
-            "task" => handle_task(project, rest),
-            "help" => print_options(),
+            "task" | "t" => handle_task(project, rest),
+            "help" | "h" => print_options(),
             x => println!("{} is not an option, input help for availabe options", x),
         }
     }
@@ -47,7 +47,7 @@ fn handle_task(project:&mut Project, mut cmds: Vec<String>){
     match cmds.pop(){
         Some(arg) => {
             match arg.as_str() {
-                "new" => {
+                "new" | "n" => {
                     match cmds.pop(){
                         Some(task_name) => {
                             project.add_task(task_name)
@@ -55,7 +55,7 @@ fn handle_task(project:&mut Project, mut cmds: Vec<String>){
                         None => println!("No 3rd argument given (task name)"),
                     }
                 }
-                "complete" => {
+                "complete" | "c" => {
                     match cmds.pop(){
                         Some(task_name) => {
                             project.complete_task(task_name)

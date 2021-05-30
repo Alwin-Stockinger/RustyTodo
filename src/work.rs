@@ -27,9 +27,9 @@ pub fn work_on_project(project:&mut Project){
         rest.reverse();
 
         match first{
-            "new" => new(project, rest.pop()),
-            "task" => work_task(project, rest.pop()),
-            "finish" => {
+            "new" | "n"  => new(project, rest.pop()),
+            "task" | "t"  => work_task(project, rest.pop()),
+            "finish" | "f" => {
                 project.add_work_time(start_time.elapsed().unwrap());
                 break;
             }
@@ -88,11 +88,11 @@ fn work_task(project: &mut Project, task_opt: Option<String>){
         let cmd = buffer.trim();
 
         match cmd{
-            "complete" => {
+            "complete" | "c" => {
                 project.complete_task(task);
                 return;
             }
-            "shelf" => return,
+            "shelf" | "s" => return,
             _ => print_task_options(),
         }
     }
