@@ -51,6 +51,7 @@ impl Handler{
                 "save" | "s" => self.save(rest),
                 "load" | "l" => self.load(rest),
                 "work" | "w" => self.work(rest.pop()),
+                "review" | "r" => self.review_projects(),
                 x => println!("{} is not an option, input help for availabe options", x),
             }
         }
