@@ -87,7 +87,8 @@ impl Handler{
         
         match first{
             "y" | "yes" => self.save(rest),
-            _ => (), 
+            "n" | "no" => return,
+            _ => self.handle_quit(), 
         }
     }
 
