@@ -71,7 +71,7 @@ fn handle_task(project:&mut Project, mut cmds: Vec<String>){
 }
 
 fn handle_finish(project:&mut Project){
-    println!("\nNext reivew in how many days?");
+    println!("\nNext review in how many days?");
 
     loop{
         let mut buffer = String::new();
