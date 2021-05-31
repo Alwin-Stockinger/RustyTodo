@@ -1,6 +1,5 @@
 use std::io::stdin;
 
-
 use crate::project::Project;
 
 
@@ -8,7 +7,7 @@ use crate::project::Project;
 pub fn work_on_project(project:&mut Project){
     println!("\nWork on project {} started", project.name);
 
-    let start_time = std::time::SystemTime::now();
+    let mut start_time = std::time::SystemTime::now();
 
     loop{
         println!("\nTasks:");
@@ -29,6 +28,11 @@ pub fn work_on_project(project:&mut Project){
         match first{
             "new" | "n"  => new(project, rest.pop()),
             "task" | "t"  => work_task(project, rest.pop()),
+            "pause" | "p" => {
+                project.add_work_time(start_time.elapsed().unwrap());
+                pause();
+                start_time = std::time::SystemTime::now();
+            } 
             "finish" | "f" => {
                 project.add_work_time(start_time.elapsed().unwrap());
                 break;
@@ -36,11 +40,17 @@ pub fn work_on_project(project:&mut Project){
             _  => print_options(),
         }
     }
-
 }
 
+fn pause(){
+    println!("Paused until you hit any key");
+    stdin().read_line(&mut String::new()).unwrap();
+    println!("Continuing");
+}
+                        
+
 fn print_options(){
-    let options = vec!["task", "finish", "help"];
+    let options = vec!["task", "new", "finish", "help"];
 
     println!("\nAvailabe Options:");
     for x in options{
