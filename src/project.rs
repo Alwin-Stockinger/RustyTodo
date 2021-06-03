@@ -4,6 +4,8 @@ use std::time::{SystemTime, Duration};
 use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
 
+pub mod task;
+
 #[derive(Serialize, Deserialize)]
 pub struct Project{
     pub name: String,
