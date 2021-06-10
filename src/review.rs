@@ -1,7 +1,7 @@
 use std::io::stdin;
 
 
-use crate::project::Project;
+use crate::project::{Project, task::Task};
 
 
 pub fn review_project(project: &mut Project){
@@ -50,7 +50,7 @@ fn handle_task(project:&mut Project, mut cmds: Vec<String>){
                 "new" | "n" => {
                     match cmds.pop(){
                         Some(task_name) => {
-                            project.add_task(task_name)
+                            project.add_task(Task::new(task_name))
                         }
                         None => println!("No 3rd argument given (task name)"),
                     }

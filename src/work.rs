@@ -1,6 +1,6 @@
 use std::io::stdin;
 
-use crate::project::Project;
+use crate::project::{Project, task::Task};
 
 
 
@@ -11,8 +11,8 @@ pub fn work_on_project(project:&mut Project){
 
     loop{
         println!("\nTasks:");
-        for task in &project.tasks{
-            println!("{}", task);
+        for (_,task) in &project.tasks{
+            println!("{}", task.name);
         }
 
         let mut buffer = String::new();
@@ -74,7 +74,7 @@ fn new(project:&mut Project, task_opt: Option<String>){
         return;
     }
     else if let Some(task) = task_opt{
-        project.add_task(task);
+        project.add_task(Task::new(task));
         return;
     }
 }

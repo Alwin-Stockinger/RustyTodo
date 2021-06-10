@@ -3,7 +3,7 @@ use std::fs::File;
 
 use std::collections::HashMap;
 
-use crate::project::Project;
+use crate::project::{Project, task::Task};
 use crate::review;
 use crate::work;
 
@@ -146,7 +146,7 @@ impl Handler{
                                 match cmds.pop(){
                                     Some(task_name) => {
                                         match self.projects.get_mut(&project_name){
-                                            Some(project) => project.add_task(task_name),
+                                            Some(project) => project.add_task(Task::new(task_name)),
                                             None => println!("Invalid project name"),
                                         }
                                     }
