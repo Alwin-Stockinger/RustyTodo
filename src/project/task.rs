@@ -17,6 +17,10 @@ impl Task{
             work_time: Duration::new(0, 0),
         }
     }
+
+    pub fn add_time_since(&mut self, start: SystemTime){
+        self.work_time += SystemTime::now().duration_since(start).unwrap();
+    }
 }
 
 impl PartialEq for Task{

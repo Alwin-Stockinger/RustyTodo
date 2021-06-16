@@ -1,4 +1,4 @@
 /target
 *.lock
-save.json
+old_save.json
 *.swp

@@ -85,25 +85,36 @@ fn work_task(project: &mut Project, task_opt: Option<String>){
         println!(" No task specified");
         return;
     }
-    let task = task_opt.unwrap();
-    if None == project.tasks.get(&task){
-        println!("{} is not a task in project {}", task, project.name);
-        return;
-    }
+    let task_name = task_opt.unwrap();
 
-    loop{
-        let mut buffer = String::new();
-        stdin().read_line(&mut buffer).unwrap();
+    match project.tasks.get_mut(&task_name){
+        None => {
+            println!("{} is not a task in project {}", task_name, project.name);
+            return;
+        }
+        Some(task) => {
+            let start_time = std::time::SystemTime::now();
 
-        let cmd = buffer.trim();
+            loop{
+                let mut buffer = String::new();
+                stdin().read_line(&mut buffer).unwrap();
 
-        match cmd{
-            "complete" | "c" => {
-                project.complete_task(task);
-                return;
+                let cmd = buffer.trim();
+
+                match cmd{
+                    "complete" | "c" => {
+                        task.add_time_since(start_time);
+                        project.complete_task(task_name);
+                        return;
+                    }
+                    "shelf" | "s" => {
+                        task.add_time_since(start_time);
+                        return
+                    }
+                    _ => print_task_options(),
+                }
             }
-            "shelf" | "s" => return,
-            _ => print_task_options(),
         }
     }
+
 }
