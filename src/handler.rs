@@ -17,7 +17,7 @@ fn print_options(){
     }
 }
 
-static SAVE_DEFAULT_NAME: &str = "save.json";
+pub(crate) static SAVE_DEFAULT_NAME: &str = "save.json";
 
 pub struct Handler{
     projects: HashMap<String, Project>,
@@ -30,7 +30,7 @@ impl Handler{
             projects: HashMap::new(),
         };
 
-        println!("Load default?");
+        println!("Load default or migrate?");
 
 
         let mut buffer = String::new();
@@ -44,6 +44,9 @@ impl Handler{
 
         match first{
             "yes" | "y" | "load" | "l" => handler.load(rest),
+            "migrate" | "m" => {
+                handler.projects = crate::migrate::migrate_save();
+            },
             _ => {}
         }
         handler
