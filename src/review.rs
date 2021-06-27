@@ -8,7 +8,7 @@ pub fn review_project(project: &mut Project){
     println!("\n");
     println!("Project name: {}", project.name);
 
-    let task_string = project.tasks.values().fold(String::from("Tasks:"), |string, task| format!("{} {}", string, task.name));
+    let task_string = project.tasks.values().fold(String::from("Tasks:"), |string, task| format!("{} {},", string, task.name));
                       
 
     println!("{}", task_string);
