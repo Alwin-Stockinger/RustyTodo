@@ -4,6 +4,7 @@ use std::time::{SystemTime, Duration};
 use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
 
+#[allow(dead_code)]
 #[derive(Serialize, Deserialize)]
 pub struct Project{
     pub name: String,
@@ -13,6 +14,7 @@ pub struct Project{
     pub work_time: std::time::Duration,
 }
 
+#[allow(dead_code)]
 impl Project{
     pub fn new(name: String) -> Project{
         Project{

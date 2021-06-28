@@ -3,7 +3,6 @@ use std::io::Read;
 
 mod old;
 
-use old::project1;
 use std::collections::HashMap;
 use crate::project::Project;
 use crate::project::task::Task;
