@@ -1,5 +1,6 @@
 use std::io::{stdin, Write, Read};
 use std::fs::File;
+use std::fs;
 
 use std::collections::HashMap;
 
@@ -18,6 +19,7 @@ fn print_options(){
 }
 
 pub(crate) static SAVE_DEFAULT_NAME: &str = "save.json";
+pub(crate) static BACKUP_SAVE_DEFAULT_NAME: &str = "backup_save.json";
 
 pub struct Handler{
     projects: HashMap<String, Project>,
@@ -187,6 +189,8 @@ impl Handler{
             Some(name) => name,
             None => String::from(SAVE_DEFAULT_NAME), 
         };
+
+        let _ = fs::rename(&save_name, BACKUP_SAVE_DEFAULT_NAME); //Error is not important
 
         let json_string = serde_json::to_string(&self.projects).unwrap();
 
