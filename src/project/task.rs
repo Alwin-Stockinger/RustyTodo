@@ -21,6 +21,10 @@ impl Task{
     pub fn add_time_since(&mut self, start: SystemTime){
         self.work_time += SystemTime::now().duration_since(start).unwrap();
     }
+
+    pub fn get_work_time(& self) -> std::time::Duration{
+        self.work_time.clone()
+    }
 }
 
 impl PartialEq for Task{
