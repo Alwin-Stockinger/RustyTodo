@@ -56,6 +56,10 @@ impl Project{
     pub fn add_work_time(&mut self, time: Duration){
         self.work_time += time;
     }
+
+    pub fn get_work_time(&self) -> Duration{
+        self.work_time.clone()
+    }
 }
 
 impl PartialEq for Project{

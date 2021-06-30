@@ -28,6 +28,7 @@ pub fn work_on_project(project:&mut Project){
         match first{
             "new" | "n"  => new(project, rest.pop()),
             "task" | "t"  => work_task(project, rest.pop()),
+            "time" | "ti" => report_project_time(&project, start_time),
             "pause" | "p" => {
                 project.add_work_time(start_time.elapsed().unwrap());
                 pause();
@@ -133,7 +134,8 @@ fn report_task_time(task: &Task, start_time: std::time::SystemTime){
     println!("Task currently: {}", fmt_duration(&elapsed));
 }
 
-
-
-
-
+fn report_project_time(project: &Project, start_time: std::time::SystemTime){
+    let elapsed = start_time.elapsed().unwrap(); 
+    println!("Project overall: {}", fmt_duration(&(project.get_work_time() + elapsed)));
+    println!("Project currently: {}", fmt_duration(&elapsed));
+}
