@@ -111,10 +111,29 @@ fn work_task(project: &mut Project, task_opt: Option<String>){
                         task.add_time_since(start_time);
                         return
                     }
+                    "time" | "t" => report_task_time(task, start_time),
                     _ => print_task_options(),
                 }
             }
         }
     }
-
 }
+
+
+fn fmt_duration(duration: &std::time::Duration) -> String{
+    let secs = duration.as_secs();
+    let mins = (secs / 60) % 60;
+    let hours = secs / (60*60);
+    format!("{}h  {}m", hours, mins)
+}
+
+fn report_task_time(task: &Task, start_time: std::time::SystemTime){
+    let elapsed = start_time.elapsed().unwrap(); 
+    println!("Task overall: {}", fmt_duration(&(task.get_work_time() + elapsed)));
+    println!("Task currently: {}", fmt_duration(&elapsed));
+}
+
+
+
+
+
