@@ -19,7 +19,10 @@ pub fn review_project(project: &mut Project){
 
         let mut commands = buffer.split_whitespace();
 
-        let first = commands.next().unwrap();
+        let first = match commands.next(){
+            Some(command) => command,
+            None => continue,
+        };
 
         let rest: Vec<String> = commands.map(|x| String::from(x)).collect();
 
