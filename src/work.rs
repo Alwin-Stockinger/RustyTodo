@@ -20,7 +20,11 @@ pub fn work_on_project(project:&mut Project){
 
         let mut cmds = buffer.split_whitespace();
 
-        let first = cmds.next().unwrap();
+        let first = match cmds.next(){
+            Some(cmd) => cmd,
+            None => continue,
+        };
+
 
         let mut rest: Vec<String> = cmds.map(|x| String::from(x)).collect();
         rest.reverse();

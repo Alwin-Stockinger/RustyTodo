@@ -42,7 +42,7 @@ impl Handler{
 
         let first = match commands.next(){
             Some(cmd) => cmd,
-            None => return,
+            None => return Handler::new(),
         };
 
         let rest: Vec<String> = commands.map(|x| String::from(x)).collect();
@@ -100,7 +100,7 @@ impl Handler{
                 self.handle_quit();
                 return;
             }
-        }
+        };
 
         let rest: Vec<String> = commands.map(|x| String::from(x)).collect();
         
