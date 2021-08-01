@@ -129,6 +129,7 @@ impl Handler{
                     "w" | "work" => self.work(arg3),
                     "l" | "list" => self.list_projects(),
                     "r" | "review" => self.review_projects(),
+                    "c" | "complete" => self.complete_project(arg3),
                     x => println!("{} is not a valid argument", x),
                 }
             }
@@ -258,6 +259,23 @@ impl Handler{
         for key in transfer{
             let project = self.active_projects.remove(&key).unwrap();
             self.finished_projects.insert(key, project);
+        }
+    }
+    fn complete_project(&mut self, name_wrapped: Option<String>) {
+        let name = match name_wrapped{
+            Some(name) => name,
+            None => {
+                println!("You didn't specify which project to complete!");
+                return;
+            }
+        };
+
+        let w_project = self.active_projects.remove(&name);
+
+        if let Some(project) = w_project{
+            self.finished_projects.insert(name, project);
+        } else {
+            println!("Project {} is not an active project", name);
         }
     }
 }
