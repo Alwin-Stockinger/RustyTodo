@@ -22,14 +22,16 @@ pub(crate) static SAVE_DEFAULT_NAME: &str = "save.json";
 pub(crate) static BACKUP_SAVE_DEFAULT_NAME: &str = "backup_save.json";
 
 pub struct Handler{
-    projects: HashMap<String, Project>,
+    active_projects: HashMap<String, Project>,
+    finished_projects: HashMap<String, Project>
 }
 
 impl Handler{
 
     pub fn new() -> Handler{
         let mut handler = Handler{
-            projects: HashMap::new(),
+            active_projects: HashMap::new(),
+            finished_projects: HashMap::new(),
         };
 
         println!("Load default or migrate?");
@@ -50,7 +52,9 @@ impl Handler{
         match first{
             "yes" | "y" | "load" | "l" => handler.load(rest),
             "migrate" | "m" => {
-                handler.projects = crate::migrate::migrate_save();
+                 let projects= crate::migrate::migrate_save();
+                handler.active_projects = projects.0;
+                handler.finished_projects = projects.1;
             },
             _ => {}
         }
@@ -135,7 +139,7 @@ impl Handler{
     fn work(&mut self, project_name_op: Option<String>){
         match project_name_op{
             Some(name) => {
-                match self.projects.get_mut(&name){
+                match self.active_projects.get_mut(&name){
                     Some(project) => work::work_on_project(project),
                     None => println!("{} is not project", name),
                 }
@@ -147,7 +151,7 @@ impl Handler{
     fn new_project(&mut self, project_name_op: Option<String>){
         match project_name_op{
             Some(name) => {
-                self.projects.insert(name.clone() ,Project::new(name));
+                self.active_projects.insert(name.clone() ,Project::new(name));
             }
             None => println!("There was no name given for the new project"),
         }
@@ -164,7 +168,7 @@ impl Handler{
                             Some(project_name) => {
                                 match cmds.pop(){
                                     Some(task_name) => {
-                                        match self.projects.get_mut(&project_name){
+                                        match self.active_projects.get_mut(&project_name){
                                             Some(project) => project.add_task(Task::new(task_name)),
                                             None => println!("Invalid project name"),
                                         }
@@ -180,7 +184,7 @@ impl Handler{
                             Some(project_name) => {
                                 match cmds.pop(){
                                     Some(task_name) => {
-                                        match self.projects.get_mut(&project_name){
+                                        match self.active_projects.get_mut(&project_name){
                                             Some(project) => project.complete_task(task_name),
                                             None => println!("Invalid project name"),
                                         }
@@ -206,7 +210,7 @@ impl Handler{
 
         let _ = fs::rename(&save_name, BACKUP_SAVE_DEFAULT_NAME); //Error is not important
 
-        let json_string = serde_json::to_string(&self.projects).unwrap();
+        let json_string = serde_json::to_string(&(&self.active_projects,&self.finished_projects)).unwrap();
 
         let mut out = File::create(save_name).unwrap();
         write!(out, "{}", json_string).unwrap();
@@ -224,20 +228,22 @@ impl Handler{
 
         file.read_to_string(&mut json_string).unwrap();
 
-        self.projects = serde_json::from_str(&json_string).unwrap();
+        let deserialized: (HashMap<String, Project>, HashMap<String, Project>) = serde_json::from_str(&json_string).unwrap();
+        self.active_projects = deserialized.0;
+        self.finished_projects = deserialized.1;
 
     }
 
     fn list_projects(&self){
         println!("\nProjects:");
-        for (_,project) in &self.projects {
+        for (_,project) in &self.active_projects {
             println!("{}", project.name);
         }
     }
 
     fn review_projects(&mut self){
         println!("\nProjects to review:");
-        for (_, project) in self.projects.iter_mut() {
+        for (_, project) in self.active_projects.iter_mut() {
             if project.has_to_be_reviewed() {
                 review::review_project(project);
             }
