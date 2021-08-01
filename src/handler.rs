@@ -40,7 +40,10 @@ impl Handler{
 
         let mut commands = buffer.split_whitespace();
 
-        let first = commands.next().unwrap();
+        let first = match commands.next(){
+            Some(cmd) => cmd,
+            None => return,
+        };
 
         let rest: Vec<String> = commands.map(|x| String::from(x)).collect();
 
@@ -62,7 +65,10 @@ impl Handler{
 
             let mut commands = buffer.split_whitespace();
 
-            let first = commands.next().unwrap();
+            let first = match commands.next(){
+                Some(cmd) => cmd,
+                None => continue,
+            };
 
             let mut rest: Vec<String> = commands.map(|x| String::from(x)).collect();
 
@@ -87,7 +93,15 @@ impl Handler{
         let mut buffer = String::new();
         stdin().read_line(&mut buffer).unwrap();
         let mut commands = buffer.split_whitespace();
-        let first = commands.next().unwrap();
+
+        let first = match commands.next(){
+            Some(cmd) => cmd,
+            None => {
+                self.handle_quit();
+                return;
+            }
+        }
+
         let rest: Vec<String> = commands.map(|x| String::from(x)).collect();
         
         match first{
