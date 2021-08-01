@@ -76,3 +76,9 @@ impl Hash for Project {
         self.name.hash(state);
     }
 }
+
+impl Default for Project{
+    fn default() -> Self {
+        Project::new("".to_string())
+    }
+}

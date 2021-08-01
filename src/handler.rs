@@ -243,10 +243,21 @@ impl Handler{
 
     fn review_projects(&mut self){
         println!("\nProjects to review:");
-        for (_, project) in self.active_projects.iter_mut() {
+
+        let mut transfer = Vec::new();
+
+        for (k, mut project) in &mut self.active_projects {
             if project.has_to_be_reviewed() {
-                review::review_project(project);
+                if !review::review_project(&mut project) {
+                    println!("ok deleteing with key {}", k);
+                    transfer.push(k.clone());
+                }
             }
+        }
+
+        for key in transfer{
+            let project = self.active_projects.remove(&key).unwrap();
+            self.finished_projects.insert(key, project);
         }
     }
 }
