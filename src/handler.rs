@@ -22,14 +22,16 @@ pub(crate) static SAVE_DEFAULT_NAME: &str = "save.json";
 pub(crate) static BACKUP_SAVE_DEFAULT_NAME: &str = "backup_save.json";
 
 pub struct Handler{
-    projects: HashMap<String, Project>,
+    active_projects: HashMap<String, Project>,
+    finished_projects: HashMap<String, Project>
 }
 
 impl Handler{
 
     pub fn new() -> Handler{
         let mut handler = Handler{
-            projects: HashMap::new(),
+            active_projects: HashMap::new(),
+            finished_projects: HashMap::new(),
         };
 
         println!("Load default or migrate?");
@@ -50,7 +52,9 @@ impl Handler{
         match first{
             "yes" | "y" | "load" | "l" => handler.load(rest),
             "migrate" | "m" => {
-                handler.projects = crate::migrate::migrate_save();
+                 let projects= crate::migrate::migrate_save();
+                handler.active_projects = projects.0;
+                handler.finished_projects = projects.1;
             },
             _ => {}
         }
@@ -125,6 +129,7 @@ impl Handler{
                     "w" | "work" => self.work(arg3),
                     "l" | "list" => self.list_projects(),
                     "r" | "review" => self.review_projects(),
+                    "c" | "complete" => self.complete_project(arg3),
                     x => println!("{} is not a valid argument", x),
                 }
             }
@@ -135,7 +140,7 @@ impl Handler{
     fn work(&mut self, project_name_op: Option<String>){
         match project_name_op{
             Some(name) => {
-                match self.projects.get_mut(&name){
+                match self.active_projects.get_mut(&name){
                     Some(project) => work::work_on_project(project),
                     None => println!("{} is not project", name),
                 }
@@ -147,7 +152,7 @@ impl Handler{
     fn new_project(&mut self, project_name_op: Option<String>){
         match project_name_op{
             Some(name) => {
-                self.projects.insert(name.clone() ,Project::new(name));
+                self.active_projects.insert(name.clone() ,Project::new(name));
             }
             None => println!("There was no name given for the new project"),
         }
@@ -164,7 +169,7 @@ impl Handler{
                             Some(project_name) => {
                                 match cmds.pop(){
                                     Some(task_name) => {
-                                        match self.projects.get_mut(&project_name){
+                                        match self.active_projects.get_mut(&project_name){
                                             Some(project) => project.add_task(Task::new(task_name)),
                                             None => println!("Invalid project name"),
                                         }
@@ -180,7 +185,7 @@ impl Handler{
                             Some(project_name) => {
                                 match cmds.pop(){
                                     Some(task_name) => {
-                                        match self.projects.get_mut(&project_name){
+                                        match self.active_projects.get_mut(&project_name){
                                             Some(project) => project.complete_task(task_name),
                                             None => println!("Invalid project name"),
                                         }
@@ -206,7 +211,7 @@ impl Handler{
 
         let _ = fs::rename(&save_name, BACKUP_SAVE_DEFAULT_NAME); //Error is not important
 
-        let json_string = serde_json::to_string(&self.projects).unwrap();
+        let json_string = serde_json::to_string(&(&self.active_projects,&self.finished_projects)).unwrap();
 
         let mut out = File::create(save_name).unwrap();
         write!(out, "{}", json_string).unwrap();
@@ -224,23 +229,53 @@ impl Handler{
 
         file.read_to_string(&mut json_string).unwrap();
 
-        self.projects = serde_json::from_str(&json_string).unwrap();
+        let deserialized: (HashMap<String, Project>, HashMap<String, Project>) = serde_json::from_str(&json_string).unwrap();
+        self.active_projects = deserialized.0;
+        self.finished_projects = deserialized.1;
 
     }
 
     fn list_projects(&self){
         println!("\nProjects:");
-        for (_,project) in &self.projects {
+        for (_,project) in &self.active_projects {
             println!("{}", project.name);
         }
     }
 
     fn review_projects(&mut self){
         println!("\nProjects to review:");
-        for (_, project) in self.projects.iter_mut() {
+
+        let mut transfer = Vec::new();
+
+        for (k, mut project) in &mut self.active_projects {
             if project.has_to_be_reviewed() {
-                review::review_project(project);
+                if !review::review_project(&mut project) {
+                    println!("ok deleteing with key {}", k);
+                    transfer.push(k.clone());
+                }
             }
+        }
+
+        for key in transfer{
+            let project = self.active_projects.remove(&key).unwrap();
+            self.finished_projects.insert(key, project);
+        }
+    }
+    fn complete_project(&mut self, name_wrapped: Option<String>) {
+        let name = match name_wrapped{
+            Some(name) => name,
+            None => {
+                println!("You didn't specify which project to complete!");
+                return;
+            }
+        };
+
+        let w_project = self.active_projects.remove(&name);
+
+        if let Some(project) = w_project{
+            self.finished_projects.insert(name, project);
+        } else {
+            println!("Project {} is not an active project", name);
         }
     }
 }

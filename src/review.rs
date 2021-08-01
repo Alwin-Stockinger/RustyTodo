@@ -4,7 +4,7 @@ use std::io::stdin;
 use crate::project::{Project, task::Task};
 
 
-pub fn review_project(project: &mut Project){
+pub fn review_project(project: &mut Project) -> bool{
     println!("\n");
     println!("Project name: {}", project.name);
 
@@ -29,7 +29,11 @@ pub fn review_project(project: &mut Project){
         match first{
             "finish" | "f" => {
                 handle_finish(project);
-                break;
+                return true;
+            }
+            "complete" | "c" => {
+                println!("Project Completed 🎉");
+                return false;
             }
             "task" | "t" => handle_task(project, rest),
             "help" | "h" => print_options(),
@@ -39,7 +43,7 @@ pub fn review_project(project: &mut Project){
 }
 
 fn print_options(){
-    let options = vec!["task (new, complete)", "finish", "help"];
+    let options = vec!["task (new, complete)","complete", "finish", "help"];
 
     println!("\nAvailabe Options:");
     for x in options{
