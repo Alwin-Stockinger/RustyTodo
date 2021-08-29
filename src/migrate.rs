@@ -6,6 +6,7 @@ mod old;
 use std::collections::HashMap;
 use crate::project::Project;
 use crate::project::task::Task;
+use std::time::UNIX_EPOCH;
 
 pub fn migrate_save() -> (HashMap<String, Project>, HashMap<String, Project>) {
     println!("From which version?(0.1: Tasks are strings, 0.2 meaningful Tasks)");
@@ -62,10 +63,10 @@ pub fn dot_one_migration() -> (HashMap<String, Project>, HashMap<String, Project
             name: project.name,
             review_time: project.review_time,
             tasks: project.tasks.drain()
-                .map(|task_name| (task_name.clone(), Task::new(task_name)))
+                .map(|task_name| (task_name.clone(), Task::new(task_name, UNIX_EPOCH)))
                 .collect(),
             completed_tasks: project.completed_tasks.drain()
-                .map(|task_name| (task_name.clone(), Task::new(task_name)))
+                .map(|task_name| (task_name.clone(), Task::new(task_name, UNIX_EPOCH)))
                 .collect(),
             work_time: project.work_time,
         };

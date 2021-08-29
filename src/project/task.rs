@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
-use std::time::{SystemTime, Duration};
+use std::time::{SystemTime, Duration, UNIX_EPOCH};
+use chrono;
 use std::hash::{Hash, Hasher};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -10,10 +11,10 @@ pub struct Task{
 }
 
 impl Task{
-    pub fn new(name: String) -> Task{
+    pub fn new(name: String, due_time: SystemTime) -> Task{
         Task{
             name,
-            due_time: SystemTime::now(),
+            due_time,
             work_time: Duration::new(0, 0),
         }
     }
@@ -24,6 +25,12 @@ impl Task{
 
     pub fn get_work_time(& self) -> std::time::Duration{
         self.work_time.clone()
+    }
+
+    pub fn string_due_date(&self) -> String{
+        let secs_since_unix =self.due_time.duration_since(UNIX_EPOCH).expect("Could not calculate duration since epoch").as_secs();
+        let date = chrono::NaiveDateTime::from_timestamp(secs_since_unix as i64, 0);
+        format!("{}", date)
     }
 }
 

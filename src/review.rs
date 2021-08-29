@@ -2,6 +2,8 @@ use std::io::stdin;
 
 
 use crate::project::{Project, task::Task};
+use std::time::UNIX_EPOCH;
+use chrono::NaiveTime;
 
 
 pub fn review_project(project: &mut Project) -> bool{
@@ -61,7 +63,22 @@ fn handle_task(project:&mut Project, mut cmds: Vec<String>){
                 "new" | "n" => {
                     match cmds.pop(){
                         Some(task_name) => {
-                            project.add_task(Task::new(task_name))
+                            match cmds.pop(){
+                                Some(time) => {
+                                    let time = time.trim();
+                                    match chrono::NaiveDate::parse_from_str(time, "%d-%m-%y"){
+                                        Ok(date) => {
+                                            let date = date.and_time(NaiveTime::from_hms(0,0,0));
+                                            let sys_time = UNIX_EPOCH + std::time::Duration::from_secs(date.timestamp() as u64);
+                                            project.add_task(Task::new(task_name, sys_time));
+                                        },
+                                        Err(e) => println!("Invalid date format {}", e),
+                                    }
+                                }
+                                None => {
+                                    project.add_task(Task::new(task_name, UNIX_EPOCH));
+                                },
+                            }
                         }
                         None => println!("No 3rd argument given (task name)"),
                     }

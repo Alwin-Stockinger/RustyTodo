@@ -7,6 +7,8 @@ use std::collections::HashMap;
 use crate::project::{Project, task::Task};
 use crate::review;
 use crate::work;
+use std::time::UNIX_EPOCH;
+use chrono::NaiveTime;
 
 
 fn print_options(){
@@ -169,9 +171,27 @@ impl Handler{
                             Some(project_name) => {
                                 match cmds.pop(){
                                     Some(task_name) => {
-                                        match self.active_projects.get_mut(&project_name){
-                                            Some(project) => project.add_task(Task::new(task_name)),
-                                            None => println!("Invalid project name"),
+                                        match cmds.pop() {
+                                            Some(time) => {
+                                                let time = time.trim();
+                                                match chrono::NaiveDate::parse_from_str(time, "%d-%m-%y"){
+                                                    Ok(date) => {
+                                                        let date = date.and_time(NaiveTime::from_hms(0,0,0));
+                                                        let sys_time = UNIX_EPOCH + std::time::Duration::from_secs(date.timestamp() as u64);
+                                                        match self.active_projects.get_mut(&project_name){
+                                                            Some(project) => project.add_task(Task::new(task_name, sys_time)),
+                                                            None => println!("Invalid project name"),
+                                                        }
+                                                    },
+                                                    Err(e) => println!("Invalid date format {}", e),
+                                                }
+                                            }
+                                            None => {
+                                                match self.active_projects.get_mut(&project_name){
+                                                    Some(project) => project.add_task(Task::new(task_name, UNIX_EPOCH)),
+                                                    None => println!("Invalid project name"),
+                                                }
+                                            }
                                         }
                                     }
                                     None => println!("No 4th argument given (task name)"),

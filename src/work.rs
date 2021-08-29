@@ -1,7 +1,8 @@
 use std::io::stdin;
 
 use crate::project::{Project, task::Task};
-
+use std::time::UNIX_EPOCH;
+use chrono::NaiveTime;
 
 
 pub fn work_on_project(project:&mut Project){
@@ -30,7 +31,7 @@ pub fn work_on_project(project:&mut Project){
         rest.reverse();
 
         match first{
-            "new" | "n"  => new(project, rest.pop()),
+            "new" | "n"  => new(project, rest),
             "task" | "t"  => work_task(project, rest.pop()),
             "time" | "ti" => report_project_time(&project, start_time),
             "pause" | "p" => {
@@ -73,14 +74,24 @@ fn print_task_options(){
     }
 }
 
-fn new(project:&mut Project, task_opt: Option<String>){
-    if None == task_opt{
+fn new(project:&mut Project, mut options: Vec<String>){
+    if let Some(task) = options.pop(){
+        println!("{}", task);
+        if let Some(time) = options.pop(){
+            let time = time.trim();
+            match chrono::NaiveDate::parse_from_str(time, "%d-%m-%y"){
+                Ok(date) => {
+                    let date = date.and_time(NaiveTime::from_hms(0,0,0));
+                    let sys_time = UNIX_EPOCH + std::time::Duration::from_secs(date.timestamp() as u64);
+                    project.add_task(Task::new(task, sys_time));
+                },
+                Err(e) => println!("Invalid date format {}", e),
+            }
+        } else{
+            project.add_task(Task::new(task, UNIX_EPOCH));
+        }
+    } else{
         println!("No task given to add");
-        return;
-    }
-    else if let Some(task) = task_opt{
-        project.add_task(Task::new(task));
-        return;
     }
 }
 
